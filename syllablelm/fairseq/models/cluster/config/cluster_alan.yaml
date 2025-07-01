@@ -1,0 +1,75 @@
+# @package _group_
+
+common:
+  bf16: true
+  log_format: json
+  log_interval: 200
+  seed: 1337
+  tensorboard_logdir: tb
+  fp16_no_flatten_grads: true
+
+checkpoint:
+  save_interval_updates: 5000
+  save_interval: 999999
+  keep_interval_updates: 1
+
+task:
+  _name: cluster_alan_pretraining
+  data: ???
+  max_sample_size: 208005
+  min_sample_size: 0
+  normalize: true
+  vocab_size: 1024
+
+dataset:
+  num_workers: 6
+  max_tokens: 20000
+  skip_invalid_size_inputs_valid_test: true
+  validate_interval_updates: 2500
+  disable_validation: false
+
+distributed_training:
+  distributed_world_size: 1
+  ddp_backend: legacy_ddp # absolutely no clue what this is. Maybe would give a faster train. prob good enough
+
+criterion:
+  _name: model
+
+optimization:
+  max_update: 400000  # 800000
+  lr: [ 0.0002 ]  # 0.0005
+  update_freq: [ 1 ]  # 16
+
+optimizer:
+  _name: adam
+  adam_betas: (0.9,0.98)
+  adam_eps: 1e-06
+  weight_decay: 0.01
+
+lr_scheduler:
+  _name: linear_tri_stage
+  warmup_steps: 16000
+  max_update: 400000
+  decay_steps: 300000
+  hold_steps: 84000
+  init_lr_scale: 0.0
+  final_lr_scale: 0.1
+
+model:
+  _name: cluster_alan
+  vocab_size: 1024
+
+hydra:
+  job:
+    config:
+      override_dirname:
+        kv_sep: '-'
+        item_sep: '__'
+        exclude_keys:
+          - run
+          - task.data
+  run:
+    dir: ???
+
+
+#64, 704 Tokens

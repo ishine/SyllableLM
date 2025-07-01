@@ -58,26 +58,21 @@ sylboost_reader = SylBoostFeatureReader(
 | 6.25Hz Large                  | [Model](https://www.cs.utexas.edu/~harwath/model_checkpoints/syllable_lm/SyllableLM_large_625Hz.pt)      |
 | 6.25Hz Interleaved Vocoder LM | [Model](https://www.cs.utexas.edu/~harwath/model_checkpoints/syllable_lm/SyllableLM_vocoder_lm_625Hz.pt) |
 
-### Usage
 
-Todo: migrate code over and facilitate twist dependency.
+### Resynthesis (and Continuation):
 
-## Resynthesis:
+Located in Experiments.ipynb
 
-Todo
+### LossPred:
 
-## Continuation Pipeline:
+This is provided as-is in Experiments.ipynb
 
-Todo
+### SylBoost training:
 
-## LossPred:
+This is provided as-is in syllablelm/SegmentalSSE
+See the provided Readme for more information
 
-This will be provided as-is
+### SyllableLM training:
 
-## SylBoost training:
-
-This will be provided as-is
-
-## SyllableLM training:
-
-This is standard language model training and will be provided as is.
+This is provided as-is in syllablelm/fairseq
+See the provided Readme for more information

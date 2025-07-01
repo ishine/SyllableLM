@@ -1,0 +1,116 @@
+# @package _group_
+
+common:
+  bf16: true
+  log_format: json
+  log_interval: 200
+  seed: 1337
+  tensorboard_logdir: tb
+  fp16_no_flatten_grads: true
+
+checkpoint:
+  save_interval_updates: 5000
+  save_interval: 999999
+  keep_interval_updates: 1
+
+task:
+  _name: cluster_alan_interleaved_pretraining
+  data: ???
+  max_sample_size: 208005
+  min_sample_size: 0
+  interleave_strat: 4
+  long_dropout: 0.0
+
+dataset:
+  num_workers: 6
+  max_tokens: 50000
+  skip_invalid_size_inputs_valid_test: true
+  validate_interval_updates: 2500
+  disable_validation: false
+
+distributed_training:
+  distributed_world_size: 2
+  ddp_backend: legacy_ddp # absolutely no clue what this is. Maybe would give a faster train. prob good enough
+
+criterion:
+  _name: model
+
+optimization:
+  max_update: 200000  # 800000
+  lr: [ 0.0002 ]  # 0.0005
+  update_freq: [ 1 ]  # 16
+
+#optimization:
+#  max_update: 100000  # 800000
+#  lr: [ 0.0002 ]  # 0.0005
+#  update_freq: [ 1 ]  # 16
+
+optimizer:
+  _name: adam
+  adam_betas: (0.9,0.98)
+  adam_eps: 1e-06
+  weight_decay: 0.01
+
+#optimizer:
+#  _name: composite
+#  dynamic_groups: true
+#  groups:
+#    default:
+#      lr_float: 0.0002
+#      optimizer:
+#        _name: adam
+#        adam_betas: [ 0.9,0.98 ]
+#        adam_eps: 1e-06
+#        weight_decay: 0.01
+#      lr_scheduler:
+#        _name: linear_tri_stage
+#        warmup_steps: 1
+#        max_update: 100000
+#        decay_steps: 100000
+#        hold_steps: 1
+#        init_lr_scale: 0.0
+#        final_lr_scale: 0.1
+#    long_moe:
+#      lr_float: 0.0002
+#      optimizer:
+#        _name: adam
+#        adam_betas: [ 0.9,0.98 ]
+#        adam_eps: 1e-06
+#        weight_decay: 0.01
+#      lr_scheduler:
+#        _name: linear_tri_stage
+#        warmup_steps: 1
+#        max_update: 100000
+#        decay_steps: 100000
+#        hold_steps: 1
+#        init_lr_scale: 0.0
+#        final_lr_scale: 0.1
+
+lr_scheduler:
+  _name: linear_tri_stage
+  warmup_steps: 8000
+  max_update: 200000
+  decay_steps: 100000
+  hold_steps: 92000
+  init_lr_scale: 0.0
+  final_lr_scale: 0.1
+
+#lr_scheduler: pass_through
+
+model:
+  _name: cluster_alan_interleaved
+
+hydra:
+  job:
+    config:
+      override_dirname:
+        kv_sep: '-'
+        item_sep: '__'
+        exclude_keys:
+          - run
+          - task.data
+  run:
+    dir: ???
+
+
+#64, 704 Tokens
